@@ -1,63 +1,86 @@
 import 'dart:convert';
 
-import 'package:fluttertest/Core/Model/listcar.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertest/Core/Model/FocusEmploye.dart';
+import 'package:fluttertest/Core/Model/Product.dart';
 import 'package:http/http.dart' as http;
-import '../Model/user.dart';
 
 /// The service responsible for networking requests
 class Api {
-  static const link = 'http://needmobildev.com/service/v2/';
-  static const basic = 'Basic bmVtb2Itc2VydmVyLWtleS1ETEFrb0w3czgtTGFCNGxaMTU2TGVMRnU6bmVtb2Itd2ViLWpfeTdSUkZaSkVUSHNxTWU=';
+  void sukses(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              color: Colors.green,
+              child: Text('Sukses'),
+            ),
+          );
+        });
+  }
+
+  void gagal(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(color: Colors.red, child: Text('gagal')),
+          );
+        });
+  }
+
+  static const link = 'http://dummy.restapiexample.com/api/v1';
   var client = new http.Client();
 
-  Future<User> getUserProfile(String email, String password) async {
-    // Get user profile for id
-    var response = await client.post('$link/authentification/Login',
-     body: {
-        'email':email,
-        'password':password
-      },
-     headers: {'Authorization':basic});
-    // Convert and return
-    
-    print(json.decode(response.body)['code']);
-    if(json.decode(response.body)['code'] !=400){
-    return User.fromJson(json.decode(response.body));
-    }else{
-      return null;
+  createemploye(nama, salary, umur, context) async {
+    var body =
+        jsonEncode({"name": "$nama", "salary": "$salary", "age": "$umur"});
+    var response = await client.post('$link/create', body: body);
+
+    print(response.hashCode);
+    if (jsonDecode(response.body)['name'] != null) {
+      Navigator.pushReplacementNamed(context, 'home');
+      sukses(context);
+    } else {
+      gagal(context);
     }
   }
 
-  Future<List<ListCars>> getPostsForUser() async {
-    var posts = List<ListCars>();
-    // Get user posts for id
-    var response = await client.get('$link/nemobrent/specialcar', headers: {'Authorization':basic});
-
-    // parse into List
-    var parsed = json.decode(response.body) as List<dynamic>;
-
-    // loop and convert each item to Post
-    for (var post in parsed) {
-      posts.add(ListCars.fromJson(post));
+  editemploye(id, nama, salary, umur, context) async {
+    var body =
+        jsonEncode({"name": "$nama", "salary": "$salary", "age": "$umur"});
+    var response = await client.put(
+      '$link/update/$id',
+      body: body,
+    );
+    print(response.hashCode);
+    if (jsonDecode(response.body)['name'] != null) {
+      Navigator.pushReplacementNamed(context, 'home');
+      sukses(context);
+    } else {
+      gagal(context);
     }
+  }
 
+  Future<List<ListProduct>> getPostsForUser() async {
+    var posts = List<ListProduct>();
+    var response = await client.get('$link/employees');
+    var parsed = json.decode(response.body) as List<dynamic>;
+    for (var post in parsed) {
+      posts.add(ListProduct.fromJson(post));
+    }
     return posts;
   }
 
-//   Future<List<Comment>> getCommentsForPost(int postId) async {
-//     var comments = List<Comment>();
+  Future<FocusEmploye> focusEmployer(String postId) async {
+    var response = await client.get('$link/employee/$postId');
+    return FocusEmploye.fromJson(json.decode(response.body));
+  }
 
-//     // Get comments for post
-//     var response = await client.get('$endpoint/comments?postId=$postId');
-
-//     // Parse into List
-//     var parsed = json.decode(response.body) as List<dynamic>;
-    
-//     // Loop and convert each item to a Comment
-//     for (var comment in parsed) {
-//       comments.add(Comment.fromJson(comment));
-//     }
-
-//     return comments;
-//   }
+  delete(String postId, context) async {
+    var response = await client.delete('$link/delete/$postId');
+    print(response.body);
+    Navigator.pushReplacementNamed(context, 'home');
+  }
 }

@@ -1,21 +1,23 @@
-import 'package:fluttertest/Core/Model/listcar.dart';
+
+import 'package:fluttertest/Core/Model/FocusEmploye.dart';
 import 'package:fluttertest/Core/Service/Api.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/widgets.dart';
 import '../../Helper/settingApp.dart';
 
-class ListCarsVM extends BaseModel {
+class FocusEmployeVM extends BaseModel {
   Api _api;
-
-  ListCarsVM({
+  String id;
+  FocusEmployeVM( {this.id,
     @required Api api,
   }) : _api = api;
 
-  List<ListCars> posts;
+  FocusEmploye posts;
 
   Future getPosts() async {
+    print(id);
     setBusy(true);
-    posts = await _api.getPostsForUser();
+    posts = await _api.focusEmployer(id);
     setBusy(false);
   }
 }

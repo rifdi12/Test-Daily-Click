@@ -22,8 +22,8 @@ class _MyAppState extends State<MyApp> {
       providers:providers,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Nemob',
-        initialRoute: 'login',
+        title: 'Test Daily Click',
+        initialRoute: 'home',
         onGenerateRoute: FluroRouter.router.generator,
       ),
     );

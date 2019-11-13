@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   fluro: ^1.5.1
+  keyboard_actions: "^2.1.2"
   pigment: ^1.0.3
   http:
   provider: ^3.0.0+1
